@@ -4,14 +4,14 @@ const express = require("express");
 const router = express.Router();
 
 
+// common prefix -- /quotes
 
 
-
-router.get("/favourites", (req, resp) => {
-	db.query("SELECT DISTINCT favourite FROM quote", (err, results) => {
+router.get("/author", (req, resp) => {
+	db.query("SELECT DISTINCT author FROM quote", (err, results) => {
 		if (err) return resp.send(apiError(err));
-		const categories = results.map((obj) => obj.category);
-		resp.send(apiSuccess(categories));
+		const authores = results.map((obj) => obj.author);
+		resp.send(apiSuccess(authores));
 	});
 });
 
@@ -56,7 +56,7 @@ router.delete("/:id", (req, resp) => {
 router.put("/:id", (req, resp) => {
 	const { author, contents, userId, createdTime } = req.body;
 	db.query(
-		"UPDATE books SET  author=?, contents=?, userId=?, createdTime=? WHERE id=?",
+		"UPDATE quote SET  author=?, contents=?, userId=?, createdTime=? WHERE id=?",
 		[ author, contents, userId, createdTime, req.params.id],
 		(err, result) => {
 			if (err) return resp.send(apiError(err));

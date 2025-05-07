@@ -35,7 +35,9 @@ router.get("/byemail/:email", (req, resp) => {
 
 // POST /users/signin
 router.post("/signin", (req, resp) => {
+
     const {email, password} = req.body
+    
     //console.log(req.url + " - " + req.method + " : " + email + " & " + passwd)
     db.query("SELECT * FROM user WHERE email=?", [email],
         (err, results) => {
@@ -47,8 +49,7 @@ router.post("/signin", (req, resp) => {
             const dbUser = results[0]
             // const isMatching = compareSync(password, dbUser.password)
             //console.log("is passwd matching: " , isMatching)
-            // if(!isMatching) // password not matching
-            //     return resp.send(apiError("Invalid password"))
+           
             if(dbUser.password !== password)
                return resp.send(apiError("Invaild Password"))
             
@@ -61,11 +62,12 @@ router.post("/signin", (req, resp) => {
 
 // POST /users
 router.post("/signup", (req, resp) => {
-    const {firstName, lastName, email, password, phoneno, address} = req.body
-    const encPasswd = bcrypt.hashSync(password, 10)
+    const {firstName, lastName, email, password, confirmPassword} = req.body
    
-    db.query("INSERT INTO user (firstName, lastName, email, password, phoneno, address) VALUES (?, ?, ?, ?, ?, ?)",
-        [firstName, lastName, email,encPasswd, phoneno, address],
+    const encPasswd = bcrypt.hashSync(password, 10)
+
+    db.query("INSERT INTO user (firstName, lastName, email,password) VALUES (?, ?, ?, ?)",
+        [firstName, lastName, email,password, confirmPassword],
         (err, result) => {
             if(err)
                 return resp.send(apiError(err))
@@ -81,7 +83,8 @@ router.post("/signup", (req, resp) => {
             }
         }
     )
-})
+   }
+)
 
 // PUT /users/:id
 router.put("/:id", (req, resp) => {
@@ -90,7 +93,7 @@ router.put("/:id", (req, resp) => {
 
 // DELETE /users/:id
 router.delete("/:id", (req, resp) => {
-    db.query("DELETE FROM users WHERE id=?", [req.params.id],
+    db.query("DELETE FROM user WHERE id=?", [req.params.id],
         (err, results) => {
             if(err)
                 return resp.send(apiError(err))
@@ -105,7 +108,7 @@ router.delete("/:id", (req, resp) => {
 router.patch("/changepasswd", (req,resp) => {
     const {id, passwd} = req.body
     const encPasswd = bcrypt.hashSync(passwd, 10)
-    db.query("UPDATE users SET passwd=? WHERE id=?", [encPasswd, id],
+    db.query("UPDATE user SET password=? WHERE id=?", [encPasswd, id],
         (err, result) => {
             if(err)
                 return resp.send(apiError(err))
