@@ -2,11 +2,11 @@ const db = require("../utils/dbpool");
 const { apiSuccess, apiError } = require("../utils/apiresult");
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
 
 
 
-// books REST apis
+
+
 router.get("/favourites", (req, resp) => {
 	db.query("SELECT DISTINCT favourite FROM quote", (err, results) => {
 		if (err) return resp.send(apiError(err));
@@ -28,16 +28,16 @@ router.get("/:id", (req, resp) => {
 		[req.params.id],
 		(err, results) => {
 			if (err) return resp.send(apiError(err));
-			if (results.length === 0) resp.send(apiError("Book not found"));
+			if (results.length === 0) resp.send(apiError("Quote not found"));
 			else resp.send(apiSuccess(results[0]));
 		}
 	);
 });
 
-router.get("/bycategory/:category", (req, resp) => {
+router.get("/byauthor/:author", (req, resp) => {
 	db.query(
-		"SELECT * FROM quote WHERE category=?",
-		[req.params.category],
+		"SELECT * FROM quote WHERE author=?",
+		[req.params.author],
 		(err, results) => {
 			if (err) return resp.send(apiError(err));
 			else resp.send(apiSuccess(results));
